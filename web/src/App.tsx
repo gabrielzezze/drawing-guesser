@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
-import CanvasDraw from "react-canvas-draw";
+import React, { useRef, useState } from 'react';
 import { requestWrapper } from '../src/Utilities/Api'
+import { ReactSketchCanvas } from "react-sketch-canvas";
+
+const SIZE = 28 * 16
 
 function App() {
 
-	const [canvas_ref, set_canvas_ref] = useState<CanvasDraw | null>(null)
+	const canvas_ref = useRef(null)
 
 	async function on_submit() {
-		if (!canvas_ref) return
+		if (!canvas_ref || !canvas_ref.current) return
 
-		const canvas_data = JSON.parse(canvas_ref.getSaveData())
-		const lines = canvas_data.lines
-		const points = []
-		lines.forEach((line: any) => {
-			line.points.forEach(p => {
-				points.push([p.x, p.y])
-			});
-		})
+		const strokes = await canvas_ref.current.exportPaths()
 
-		const data = {
-			points,
-			width: canvas_data.width,
-			height: canvas_data.height
-		}
+		const formatted_stokes = strokes.map(stroke => {
+			const xs = []
+			const ys = []
+			
+			for (const point of stroke.paths) {
+				xs.push(point.x)
+				ys.push(point.y)
+			}
+
+			return [xs, ys]
+		});
 
 		const res = await requestWrapper<{ categories: string[], accuracy: string[] }>({
 			url: '/predict',
-			data,
+			data: { points: formatted_stokes, width: SIZE, height: SIZE },
 			method: 'post'
 		})
 
@@ -40,11 +41,12 @@ function App() {
 			<h1 className={'text-white text-center text-3xl'}>Drawing Guesser</h1>
 			</section>
 			<section className={'w-full p-2 container mx-auto flex flex-row justify-center'}>
-				<CanvasDraw 
-					ref={(ref) => set_canvas_ref(ref)}
-					className={'w-3/5'}
-					canvasWidth={window.innerWidth * 0.8}
-					canvasHeight={window.innerHeight* 0.8}
+				<ReactSketchCanvas
+					ref={canvas_ref}
+					strokeWidth={2}
+					strokeColor="black"
+					width={`${SIZE}px`}
+					height={`${SIZE}px`}
 				/>
 			</section>
 			<section className={'w-full p-2 container mx-auto flex flex-row justify-center'}>
@@ -53,6 +55,12 @@ function App() {
 					className={'bg-white px-3 py-2 rounded'}
 				>
 					Enviar
+				</button>
+				<button
+					onClick={() => canvas_ref.current ?  canvas_ref.current.clearCanvas() : console.log('f')} 
+					className={'bg-white px-3 py-2 rounded ml-5'}
+				>
+					Limpar
 				</button>
 			</section>
 		</div>
