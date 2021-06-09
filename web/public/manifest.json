@@ -1,0 +1,9 @@
+{
+  "short_name": "Drawing Guesser",
+  "name": "Drawing Guesser Web",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
