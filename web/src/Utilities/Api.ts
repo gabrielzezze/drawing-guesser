@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const Api = axios.create({
-    baseURL: process.env.NODE_ENV ? 'http:localhost:5000': '',
+    baseURL: process.env.NODE_ENV ? 'http://localhost:5000': '',
     headers: {
-        'ContentType': 'application/json'
+        'ContentType': 'application/json',
+        'Access-Control-Allow-Origin': '*'
     }
 })
 

@@ -24,13 +24,14 @@ function App() {
 			height: canvas_data.height
 		}
 
-		const res = await requestWrapper({
+		const res = await requestWrapper<{ categories: string[], accuracy: string[] }>({
 			url: '/predict',
 			data,
 			method: 'post'
 		})
 
-		if (res.success) alert('Infleizmente ocorreu um erro durante a requisicao')
+		if (!res.success) alert('Infleizmente ocorreu um erro durante a requisicao')
+		else alert(`${res.data.categories[0]}`)
 	}
 
 	return (

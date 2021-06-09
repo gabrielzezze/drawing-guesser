@@ -12,6 +12,8 @@ ipykernel = "*"
 pandas = "*"
 statsmodels = "*"
 ujson = "*"
+flask = "*"
+flask-cors = "*"
 
 [dev-packages]
 

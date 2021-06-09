@@ -1,14 +1,18 @@
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 import numpy as np
 import tensorflow as tf
 import os
 import heapq
 
 app = Flask("Drawing Guesser")
+CORS(app)
 
-model = tf.keras.models.load_model('../model')
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
-data_files = os.listdir('../data/')
+model = tf.keras.models.load_model(f'{dir_path}/../model/trained_models')
+data_files = os.listdir(f'{dir_path}/../model/data/')
+
 df = []
 for file in data_files:
     if file == './data/.DS_Store' or file == '.DS_Store':
@@ -42,3 +46,8 @@ def hello_world():
         "categories": preds,
         "acurracy": top_3
     }
+
+
+if __name__ == '__main__':
+    app.debug = True
+    app.run()
