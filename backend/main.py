@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 import cairocffi as cairo
 from flask_cors import CORS, cross_origin
 import numpy as np
@@ -9,10 +9,20 @@ import matplotlib.pyplot as plt
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-app = Flask("Drawing Guesser")
-CORS(app)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
+build_dir = f'{dir_path}/../web/build/'
+
+app = Flask("Drawing Guesser", static_folder=build_dir, static_url_path='/')
+CORS(app)
+
+
+@app.route('/<path:path>')
+def send_web(path):
+    print(path)
+    return send_from_directory(build_dir, 'index.html')
+
+
 
 model = tf.keras.models.load_model(f'{dir_path}/../model/trained_models')
 data_files = os.listdir(f'{dir_path}/../model/data/')
