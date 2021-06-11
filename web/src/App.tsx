@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { requestWrapper } from '../src/Utilities/Api'
 import { ReactSketchCanvas } from "react-sketch-canvas";
+import { useEffect } from 'react';
 
 const SIZE = 28 * 16
 
@@ -8,6 +9,7 @@ function App() {
 
 	const canvas_ref = useRef(null)
 	const [return_data, set_return_data] = useState<any>(null)
+	const [available_categories, set_available_categories] = useState<string[]>([])
 
 	async function on_submit() {
 		if (!canvas_ref || !canvas_ref.current) return
@@ -36,10 +38,33 @@ function App() {
 		set_return_data(res.data)
 	}
 
+	async function get_categories() {
+		const res = await requestWrapper<{categories: string[]}>({
+			url: '/categories',
+			data: undefined,
+			method: 'get'
+		})
+
+		if (res.success) {
+			set_available_categories(res.data.categories)
+		}
+	}
+
+	useEffect(() => {
+		get_categories()
+	}, [])
+
+
 	return (
 		<div className={'w-full h-screen bg-lightBlack'}>
 			<section className={'w-full p-2 container mx-auto'}>
 			<h1 className={'text-white text-center text-3xl'}>Drawing Guesser</h1>
+			</section>
+			<section className={'w-full p-2 container mx-auto flex flex-col justify-center items-center mt-5'}>
+				<h2 className={'text-white text-center text-2xl'}>Categorias Disponiveis</h2>
+				<ul className={'w-2/5 flex flex-row items-center justify-center flex-wrap'}>
+					{ available_categories.map((cat, idx) => (<li className={'text-white text-l px-1'}>{cat}{idx === available_categories.length-1 ? '' : ','} </li>)) }
+				</ul>
 			</section>
 			<section className={'w-full p-2 container mx-auto flex flex-row justify-center'}>
 				<ReactSketchCanvas

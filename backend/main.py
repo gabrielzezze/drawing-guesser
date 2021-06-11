@@ -19,7 +19,6 @@ CORS(app)
 
 @app.route('/<path:path>')
 def send_web(path):
-    print(path)
     return send_from_directory(build_dir, 'index.html')
 
 
@@ -33,6 +32,12 @@ for file in data_files:
         continue
     df.append(file)
 categories = [x.split('/')[-1].split('.')[0] for x in df]
+
+@app.route('/categories')
+def send_categories():
+    return { "categories": categories}
+
+
 
 @app.route('/predict', methods=['POST'])
 def hello_world():
