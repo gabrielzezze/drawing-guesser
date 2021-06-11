@@ -113,4 +113,4 @@ def vector_to_raster(vector_images, side=28, line_diameter=16, padding=16, bg_co
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(port=80)
