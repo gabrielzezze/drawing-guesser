@@ -7,6 +7,7 @@ const SIZE = 28 * 16
 function App() {
 
 	const canvas_ref = useRef(null)
+	const [return_data, set_return_data] = useState<any>(null)
 
 	async function on_submit() {
 		if (!canvas_ref || !canvas_ref.current) return
@@ -32,7 +33,7 @@ function App() {
 		})
 
 		if (!res.success) alert('Infleizmente ocorreu um erro durante a requisicao')
-		else alert(`${res.data.categories[0]}`)
+		set_return_data(res.data)
 	}
 
 	return (
@@ -57,12 +58,29 @@ function App() {
 					Enviar
 				</button>
 				<button
-					onClick={() => canvas_ref.current ?  canvas_ref.current.clearCanvas() : console.log('f')} 
+					onClick={() => {
+						if (canvas_ref.current) {
+							canvas_ref.current.clearCanvas()
+							set_return_data(null)
+						}
+					}} 
 					className={'bg-white px-3 py-2 rounded ml-5'}
 				>
 					Limpar
 				</button>
 			</section>
+			{
+				return_data ? (
+					<section className={'w-full p-2 container mx-auto flex flex-col justify-center items-center mt-5'}>
+						<h2 className={'text-white text-center text-3xl'}>Resultados:</h2>
+						<ol>
+							<li className={'text-white text-center text-xl py-2 '}>1. {return_data.categories[0]}: {(return_data.acurracy[0]*100).toFixed(2)}%</li>
+							<li className={'text-white text-center text-xl py-2 '}>2. {return_data.categories[1]}: {(return_data.acurracy[1]*100).toFixed(2)}%</li>
+							<li className={'text-white text-center text-xl py-2 '}>3. {return_data.categories[2]}: {(return_data.acurracy[2]*100).toFixed(2)}%</li>
+						</ol>
+					</section>
+				) : null
+			}
 		</div>
 		);
 	}
